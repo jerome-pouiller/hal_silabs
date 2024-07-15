@@ -19,8 +19,8 @@
 
 #include <stdint.h>
 
-#include "socket.h"
-#include "select.h"
+#include <sys/socket.h>
+#include <sys/select.h>
 
 /**
  * @addtogroup SI91X_SOCKET_FUNCTIONS
