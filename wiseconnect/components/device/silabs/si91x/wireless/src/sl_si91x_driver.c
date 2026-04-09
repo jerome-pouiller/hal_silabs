@@ -27,8 +27,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  ******************************************************************************/
-#include <zephyr/logging/log.h>
-
 #include "sl_wifi.h"
 #include "sli_wifi.h"
 #include "sl_si91x_host_interface.h"
@@ -71,8 +69,6 @@
 #include "sl_si91x_socket_utility.h"
 #include "sl_si91x_socket_callback_framework.h"
 #endif
-
-LOG_MODULE_DECLARE(siwx91x_nwp, 4);
 
 // Define the event flag for command engine status notification if not already defined
 #ifndef SLI_SI91X_NCP_HOST_COMMAND_ENGINE_STATUS_NOTIFICATION_EVENT
@@ -483,8 +479,8 @@ sl_status_t sl_si91x_driver_init_wifi_radio(const sl_wifi_device_configuration_t
 
 // Set 11ax configuration with guard interval if SLI_SI91X_CONFIG_WIFI6_PARAMS is supported
 #ifdef SLI_SI91X_CONFIG_WIFI6_PARAMS
-  //status = sl_wifi_set_11ax_config(SLI_GUARD_INTERVAL);
-  //VERIFY_STATUS_AND_RETURN(status);
+  status = sl_wifi_set_11ax_config(SLI_GUARD_INTERVAL);
+  VERIFY_STATUS_AND_RETURN(status);
 #endif
 
   // Send WLAN request to set the operating band (2.4GHz or 5GHz)
@@ -854,16 +850,15 @@ sl_status_t sl_si91x_driver_init(const sl_wifi_device_configuration_t *config, s
   }
   // Save the coexistence mode in the driver
   sli_save_coex_mode(config->boot_config.coex_mode);
-// #ifdef SL_SI91X_GET_EFUSE_DATA
-//   status = sli_si91x_get_flash_efuse_data(&si91x_efuse_data, config->efuse_data_type);
-// #endif
-// #ifdef SLI_SI91X_MCU_INTERFACE
-//   if (status == SL_STATUS_OK) {
-//     LOG_INF("Change the clock");
-//     [> send a notification to the NWP indicating whether the M4 core is currently utilizing the XTAL as its clock source<]
-//     sli_si91x_send_m4_xtal_usage_notification_to_ta();
-//   }
-// #endif
+#ifdef SL_SI91X_GET_EFUSE_DATA
+  status = sli_si91x_get_flash_efuse_data(&si91x_efuse_data, config->efuse_data_type);
+#endif
+#ifdef SLI_SI91X_MCU_INTERFACE
+  if (status == SL_STATUS_OK) {
+    /* send a notification to the NWP indicating whether the M4 core is currently utilizing the XTAL as its clock source*/
+    sli_si91x_send_m4_xtal_usage_notification_to_ta();
+  }
+#endif
 
   return status;
 }
@@ -978,7 +973,7 @@ sl_status_t sli_si91x_get_flash_efuse_data(sli_wifi_efuse_data_t *efuse_data, ui
   if (!device_initialized) {
     return SL_STATUS_NOT_INITIALIZED;
   }
-  LOG_INF("What!!");
+
   status = sli_si91x_driver_send_command(SLI_COMMON_REQ_GET_EFUSE_DATA,
                                          SLI_WIFI_COMMON_CMD,
                                          &efuse_data_type,

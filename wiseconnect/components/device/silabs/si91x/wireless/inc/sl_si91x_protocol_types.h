@@ -664,7 +664,6 @@ typedef struct {
   uint8_t wireless_mode;    ///< Wireless Mode.
   uint8_t enable_ppp;       ///< Enable PPP.
   uint8_t afe_type;         ///< AFE Type.
-  uint8_t reserved[3];
   uint32_t feature_enables; ///< Feature Enables.
 } sli_si91x_feature_frame_request;
 

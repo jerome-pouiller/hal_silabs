@@ -27,7 +27,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  ******************************************************************************/
-#include <zephyr/logging/log.h>
 #include "sl_si91x_host_interface.h"
 #include "sl_si91x_types.h"
 #include "sl_si91x_protocol_types.h"
@@ -77,8 +76,6 @@
 #ifdef SLI_SI91X_ENABLE_BLE
 #include "rsi_bt_common.h"
 #endif
-
-LOG_MODULE_DECLARE(siwx91x_nwp, 4);
 
 extern osMessageQueueId_t sli_network_manager_request_queue;
 #define BUS_THREAD_EVENTS \
@@ -358,8 +355,6 @@ static sl_status_t bus_write_frame(sli_wifi_command_queue_t *queue,
       sli_si91x_config_m4_dma_desc_on_reset();
     }
 #endif
-    LOG_HEXDUMP_INF(packet->desc, 16, "nwp tx:");
-    LOG_HEXDUMP_INF(packet->data, MIN(length, 128), "...");
     SL_PRINT_STRING_DEBUG("<>>>> Tx -> queueId : %u, frameId : 0x%x, length : %u\n",
                           node->firmware_queue_id,
                           packet->command,
@@ -444,8 +439,6 @@ static sl_status_t bus_write_data_frame(sli_wifi_buffer_queue_t *queue)
     SL_PRINT_STRING_ERROR("\r\n BUS_WRITE_ERROR \r\n");
     sli_command_engine_status_queue_enqueue_and_set_event(SL_STATUS_BUS_ERROR);
   } else {
-    LOG_HEXDUMP_INF(packet->desc, 16, "nwp tx:");
-    LOG_HEXDUMP_INF(packet->data, MIN(length, 128), "...");
     SL_PRINT_STRING_DEBUG("<>>>> Tx -> queueId : %u, frameId : 0x%x, length : %u\n", 5, 0, length);
   }
 
@@ -669,7 +662,7 @@ static inline void sli_si91x_wifi_handle_rx_events(uint32_t *event)
     const sl_wifi_system_packet_t *response = (const sl_wifi_system_packet_t *)data;
     SL_PRINT_STRING_DEBUG("><<<< Rx -> queueId : %u, frameId : 0x%x, ", queue_id, frame_type);
     SL_PRINT_STRING_DEBUG("frameStatus: 0x%x, length : %u\n", frame_status, (response->length & (~(0xF000))));
-    LOG_HEXDUMP_INF(data, (response->length & 0x0FFF) + 16, "nwp rx:");
+
     switch (queue_id) {
       case SLI_WLAN_MGMT_Q: {
         // Erase queue ID as it overlays with the length field which is only 24-bit

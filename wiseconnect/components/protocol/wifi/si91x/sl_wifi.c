@@ -27,8 +27,6 @@
  * 3. This notice may not be removed or altered from any source distribution.
  *
  ******************************************************************************/
-#include <zephyr/logging/log.h>
-
 #include "sl_wifi.h"
 #include "sl_wifi_types.h"
 #include "sl_wifi_constants.h"
@@ -58,8 +56,6 @@
   {                                   \
   }
 #endif
-
-LOG_MODULE_DECLARE(siwx91x_nwp, 4);
 
 #ifndef MIN
 #define MIN(X, Y) ((X) < (Y) ? (X) : (Y))
@@ -121,23 +117,22 @@ sl_status_t sl_wifi_init(const sl_wifi_device_configuration_t *configuration,
     status = sl_si91x_m4_ta_secure_handshake(SL_SI91X_ENABLE_SIDE_BAND, sizeof(uint32_t), (uint8_t *)desc_ptr, 0, NULL);
   }
 #endif
-// #ifdef SLI_SI91X_MCU_INTERFACE
-// #if defined(SLI_SI917)
-//   if (status == SL_STATUS_OK) {
-//     [>Getting PTE CRC value to distinguish firmware 17 and 18 boards.<]
-//     sli_si91x_get_flash_efuse_data(&efuse_data, SL_SI91X_EFUSE_PTE_CRC);
+#ifdef SLI_SI91X_MCU_INTERFACE
+#if defined(SLI_SI917)
+  if (status == SL_STATUS_OK) {
+    /*Getting PTE CRC value to distinguish firmware 17 and 18 boards.*/
+    sli_si91x_get_flash_efuse_data(&efuse_data, SL_SI91X_EFUSE_PTE_CRC);
 
-//     [>PTE FW version check.<]
-//     if (efuse_data.pte_crc == FIRMWARE_17_PTE_CRC_VALUE) {
-//       LOG_INF("Enable Higher PWM RO");
-//       [> Enable Higher PWM RO Frequency Mode for PMU for FW17 boards<]
-//       RSI_IPMU_Set_Higher_Pwm_Ro_Frequency_Mode_to_PMU();
-//       [> Set the RETN_LDO voltage to 0.8V for FW17 boards<]
-//       RSI_IPMU_Retn_Voltage_To_Default();
-//     }
-//   }
-// #endif
-// #endif
+    /*PTE FW version check.*/
+    if (efuse_data.pte_crc == FIRMWARE_17_PTE_CRC_VALUE) {
+      /* Enable Higher PWM RO Frequency Mode for PMU for FW17 boards*/
+      RSI_IPMU_Set_Higher_Pwm_Ro_Frequency_Mode_to_PMU();
+      /* Set the RETN_LDO voltage to 0.8V for FW17 boards*/
+      RSI_IPMU_Retn_Voltage_To_Default();
+    }
+  }
+#endif
+#endif
   return status;
 }
 
