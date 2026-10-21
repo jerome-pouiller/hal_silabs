@@ -34,7 +34,9 @@
 
 #include <stdbool.h>
 #include "sl_common.h"
+#if defined(SL_COMPONENT_CATALOG_PRESENT)
 #include "sl_component_catalog.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
