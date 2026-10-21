@@ -42,7 +42,7 @@
 #include "sli_cpc_wake.h"
 #endif
 
-#if defined(SL_CATALOG_KERNEL_PRESENT)
+#if defined(SL_CPC_KERNEL_PRESENT)
 static void cpc_task(void *arg)
 {
   sl_cpc_bus_t *bus = (sl_cpc_bus_t *)arg;
@@ -62,7 +62,7 @@ static void cpc_task(void *arg)
  ******************************************************************************/
 static sl_status_t init_kernel(sl_cpc_bus_t *bus)
 {
-#if defined(SL_CATALOG_KERNEL_PRESENT)
+#if defined(SL_CPC_KERNEL_PRESENT)
   sl_status_t status = SL_STATUS_OK;
 
   const osMutexAttr_t ep_list_mutex_attr = {
@@ -156,7 +156,7 @@ exit:
   (void)bus;
 
   return SL_STATUS_OK;
-#endif // SL_CATALOG_KERNEL_PRESENT
+#endif // SL_CPC_KERNEL_PRESENT
 }
 
 /***************************************************************************/ /**
@@ -164,14 +164,14 @@ exit:
  ******************************************************************************/
 static void deinit_kernel(const sl_cpc_bus_t *bus)
 {
-#if defined(SL_CATALOG_KERNEL_PRESENT)
+#if defined(SL_CPC_KERNEL_PRESENT)
   osThreadTerminate(bus->thread_id);
   osSemaphoreDelete(bus->event_signal);
   osMutexDelete(bus->transmit_queue_lock);
   osMutexDelete(bus->ep_list_lock);
 #else
   (void)bus;
-#endif // SL_CATALOG_KERNEL_PRESENT
+#endif // SL_CPC_KERNEL_PRESENT
 }
 
 /***************************************************************************/ /**
